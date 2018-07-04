@@ -28,6 +28,7 @@ Enjoy!
 ### Requirements
 - Ansible 2.0.0 or newer
 - Ubuntu 16.04* / 18.04 (installed on your web server or virtual machine)
+- *`PHP 7.2` (it is included by default in 18.04 repositories, but it is needed to be additionally installed on 16.04!!!) 
 
 *On Ubuntu 16.04 LTS the PHP version, which is in the repository by default is 7.0. This playbook is set to use PHP7.2 by default, so if you want to use it on Ubuntu 16.04, please, install PHP7.2 first!!!
 
