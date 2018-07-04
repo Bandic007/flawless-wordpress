@@ -15,7 +15,7 @@ I've forked his work, made some changes applicable for me and for usage with Ubu
  - changed Wordpress installation directory from `/srv/www` to `/var/www/html/`
  - installing additional PHP7.2 modules, including `php7.2-fpm`
  - removing default `/var/www/html/index.nginx-debian.html` and `/etc/nginx/sites-enabled/default` files to avoid loading them
- - applying changes to `/etc/php/7.2/fpm/php.ini` to lines `upload_max_filesize` and `post_max_size` to increase limits to `100MB`
+ - applying changes to `/etc/php/7.2/fpm/php.ini` to lines `upload_max_filesize` and `post_max_size` to increase upload limits to `100MB`
  - added ansible task to restart not only nginx server but `php7.2-fpm` service also, after changes in `php.ini` are applied
  - entirely changed default nginx `wrodpress.conf` for simple deployment.
  - on Database creation, added string to create the database initially with `utf8` encoding
