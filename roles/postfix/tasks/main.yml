@@ -1,0 +1,9 @@
+---
+# tasks file for postfix
+
+- name: Install postfix
+  apt: name=postfix state=present
+  become: yes
+  
+- name: Start postfix
+  service: name=postfix state=started enabled=yes

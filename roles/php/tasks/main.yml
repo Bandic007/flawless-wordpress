@@ -1,0 +1,42 @@
+---
+# tasks file for php
+
+- name: Install php extensions
+  apt:
+    name: "{{ item }}"
+    state: present
+  become: yes
+  with_items:
+    - php7.2
+    - php7.2-mysql
+    - php7.2-gd
+    - php-ssh2
+    - php7.2-xmlrpc
+    - php7.2-xml
+    - php7.2-zip
+    - php7.2-curl
+    - php7.2-fpm
+
+- name: Setup php-fpm cgi.fix value
+  replace: dest=/etc/php/7.2/fpm/php.ini regexp="(;cgi.fix_pathinfo=1)" replace="cgi.fix_pathinfo=0"
+#  replace: dest=/etc/php/7.2/fpm/php.ini regexp="(upload_max_filesize = 2M)" replace="upload_max_filesize = 100M"
+#  replace: dest=/etc/php/7.2/fpm/php.ini regexp="(post_max_size = 8M)" replace="post_max_size = 100M"
+#  notify:
+#    - restart nginx
+  become: yes
+
+- name: Setup php-fpm upload_max_filesize to 100MB
+  replace: dest=/etc/php/7.2/fpm/php.ini regexp="(upload_max_filesize = 2M)" replace="upload_max_filesize = 100M"
+  become: yes
+
+- name: setup php-fpm post_max_size to 100MB
+  replace: dest=/etc/php/7.2/fpm/php.ini regexp="(post_max_size = 8M)" replace="post_max_size = 100M"
+  notify:
+    - restart nginx
+  become: yes
+
+- name: Add php settings
+  template: src=../../nginx/templates/nginx-wp-common.conf dest=/etc/nginx/nginx-wp-common.conf owner=www-data group=www-data mode=0644
+  notify:
+    - restart nginx
+  become: yes

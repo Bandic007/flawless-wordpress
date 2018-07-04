@@ -1,0 +1,8 @@
+- hosts: webservers
+
+  roles:
+    - nginx
+    - wordpress
+    - mysql
+    - php
+    - postfix

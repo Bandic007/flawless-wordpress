@@ -1,0 +1,63 @@
+---
+- name: Create webroot
+  file:
+    state: directory
+    path: /var/www/html/wordpress
+    owner: root
+    group: root
+    mode: 0755
+  become: yes
+
+#- name: Check if WordPress directory exists in /var/www/html
+#  stat: path=/var/www/html/wordpress
+#  register: check_path
+
+- name: Download WordPress
+  get_url: 
+    url: https://wordpress.org/{{ wp_version }}.tar.gz 
+    dest: /var/www/html/{{ wp_version }}.tar.gz 
+  become: yes
+ # when: not check_path.stat.exists
+
+- name: Extract WordPress
+  unarchive:
+    src: /var/www/html/{{ wp_version }}.tar.gz
+    dest: /var/www/html/
+    owner: www-data
+    group: www-data
+    copy: no
+  become: yes
+#  when: not check_path.stat.exists
+
+#- name: Move WordPress install files
+#  command: mv /tmp/wordpress /var/www/html/
+#  become: yes
+#  when: not check_path.stat.exists
+
+- name: Fetch random salts for WordPress config
+  local_action: command curl https://api.wordpress.org/secret-key/1.1/salt/ warn=False
+  register: "wp_salt"
+  become: no
+
+- name: Add wp-config
+  template: "src=wp-config.php dest=/var/www/html/wordpress/wp-config.php"
+  become: yes
+
+- name: Update WordPress config file
+  lineinfile:
+    dest: "/var/www/html/wordpress/wp-config.php"
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+  with_items:
+    - {'regexp': "define\\('DB_NAME', '(.)+'\\);", 'line': "define('DB_NAME', '{{wp_db_name}}');"}
+    - {'regexp': "define\\('DB_USER', '(.)+'\\);", 'line': "define('DB_USER', '{{wp_db_user}}');"}
+    - {'regexp': "define\\('DB_PASSWORD', '(.)+'\\);", 'line': "define('DB_PASSWORD', '{{wp_db_password}}');"}
+  become: yes
+
+- name: Remove default web pages files
+  file:
+    path: /var/www/html/index.nginx-debian.html
+    state: absent
+  notify:
+    - restart nginx
+  become: yes  
